@@ -1,6 +1,6 @@
 import os
 import pytest
-from expstock import ExpStock
+from expstock.expstock import ExpStock
 from freezegun import freeze_time
 
 @pytest.fixture()

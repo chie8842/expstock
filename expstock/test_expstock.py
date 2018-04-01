@@ -7,7 +7,7 @@ import os
 import platform
 import pytest
 from freezegun import freeze_time
-from expstock import ExpStock
+from expstock.expstock import ExpStock
 
 @freeze_time('2018-04-01')
 def test_variables(init_ExpStock):

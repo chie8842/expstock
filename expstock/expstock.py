@@ -2,10 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from datetime import datetime
+import functools
 import os
 import platform
 import sys
 import subprocess
+
 
 class ExpStock(object):
     """ExpStock
@@ -59,7 +61,6 @@ class ExpStock(object):
 
     def _mk_logdir(self):
         if not os.path.isdir(self.log_dirname):
-            print(self.log_dirname)
             os.makedirs(self.log_dirname)
 
     def _get_machine_info(self):
@@ -84,15 +85,12 @@ class ExpStock(object):
 
     def append_param(self, **kwargs):
         flg = 1
-        print(locals())
         kwargs = locals()['kwargs']
         for obj in kwargs:
             self.params.append((obj, kwargs[obj]))
 
     def append_memo(self, *args):
         for obj in args[0:]:
-            print(obj)
-            print(type(obj))
             self.memos.append(obj)
 
     def _write_log(self, filename, value, open_type='w'):
@@ -108,27 +106,27 @@ class ExpStock(object):
                     f.write('{} = {}\n'.format(value[0], value[1]))
                 elif type(value) == str:
                     f.write(value + '\n')
+
     def pre_stock(self):
-        _mk_logdir()
-        machine_info = _get_machine_info()
-        git_head, git_diff = _get_git_info()
+        self._mk_logdir()
+        machine_info = self._get_machine_info()
 
         if self.git_check == True:
-            git_head, git_diff = self.get_info()
-            _write_log('git_head.txt', git_head, 'wb')
-            _write_log('git_diff.txt', git_diff, 'wb')
-        _write_logs('params.txt', self.params)
-        _write_logs('memo.txt', self.memos)
-        _write_logs(machine_info.txt, machine_info)
+            git_head, git_diff = self._get_git_info()
+            self._write_log('git_head.txt', git_head, 'wb')
+            self._write_log('git_diff.txt', git_diff, 'wb')
+        self._write_logs('params.txt', self.params)
+        self._write_logs('memo.txt', self.memos)
+        self._write_logs('machine_info.txt', machine_info)
 
         start_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        _write_log('exec_time.txt', start_time, 'w')
+        self._write_log('exec_time.txt', 'start_time: {}\n'.format(start_time), 'w')
 
         # Change target of stdout and stderr to log files
         stdout_path = os.path.join(self.log_dirname, 'stdout.txt')
         stderr_path = os.path.join(self.log_dirname, 'stderr.txt')
-        sys.stdout = open(stdout_path)
-        sys.stderr = open(stderr_path)
+        sys.stdout = open(stdout_path, 'w')
+        sys.stderr = open(stderr_path, 'w')
 
     def post_stock(self, func_result=''):
         sys.stdout.close()
@@ -136,19 +134,23 @@ class ExpStock(object):
         sys.stderr.close()
         sys.stderr = sys.__stdout__
         finish_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        _write_log('exec_time.txt', finish_time, 'a')
+        self._write_log('exec_time.txt', 'finish_time: {}\n'.format(finish_time), 'a')
+        self._write_log('func_result.txt', func_result)
 
-    def expstock(self):
-        """expstock
+def expstock(e):
+    """expstock
 
-        :param func:
-        """
+    :param func:
+    """
 
-        def _expstock(func):
-            @functools.wraps(func)
-            def wrapper(*args, **kwargs):
-                pre_stock()
-                func_result = func(*args, **kwargs)
-                post_stock(func_result)
+    def _expstock(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            e.pre_stock()
+            func_result = func(*args, **kwargs)
+            e.post_stock(func_result)
+            return func_result
+        return wrapper
+    return _expstock
 
 

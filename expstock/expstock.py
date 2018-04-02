@@ -130,14 +130,15 @@ finish_time: {}
 
 git_head: {}
 
-        """.format(
+""".format(
                 self.script_name,
                 self.start_time,
                 self.finish_time,
                 self.git_head)
 
-        params_text = 'params\n'
-        memos_text = 'memos\n'
+        params_text = 'params:\n'
+        empty_row = '\n'
+        memos_text = 'memos:\n'
 
         with open(filepath, 'w') as f:
             f.write(text)
@@ -145,6 +146,7 @@ git_head: {}
             for param in self.params:
                 f.write('{} = {}\n'.format(param[0], param[1]))
 
+            f.write(empty_row)
             f.write(memos_text)
             for memo in self.memos:
                 f.write(memo)

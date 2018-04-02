@@ -11,7 +11,7 @@ import subprocess
 
 class ExpStock(object):
     """ExpStock
-    e.g. Now, you have variables `a`, `b` and experimental function `hoge`, 
+    e.g. Now, you have variables `a`, `b` and experimental function `hoge`,
 
     >>> a = 1
     >>> b = 2
@@ -33,7 +33,7 @@ class ExpStock(object):
     >>> post_stock()
     """
 
-    def __init__(self, log_dirname='', params=[], memos=[], git_check=True):
+    def __init__(self, log_dirname='', params=[], memos=[], git_check=True, report=False, script_name='Untitled'):
         """__init__
 
         :param log_dirname: name of the directory to stock expriments
@@ -50,7 +50,13 @@ class ExpStock(object):
         self.log_dirname = log_dirname
         self.memos = memos
         self.git_check = git_check
+        self.git_head = None
+        self.git_diff = None
+        self.start_time = None
+        self.finish_time = None
+        self.script_name = script_name
         self._set_dirname(log_dirname)
+        self.report = report
 
     def _set_dirname(self, log_dirname):
         if log_dirname != '':
@@ -107,20 +113,57 @@ class ExpStock(object):
                 elif type(value) == str:
                     f.write(value + '\n')
 
+    def _create_report(self):
+        """_create_report
+        TODO: Jinja2を使って書き換える
+        """
+
+        filepath = os.path.join(self.log_dirname, 'report.txt')
+        text = """
+report
+========
+
+script_name: {}
+
+start_time: {}
+finish_time: {}
+
+git_head: {}
+
+        """.format(
+                self.script_name,
+                self.start_time,
+                self.finish_time,
+                self.git_head)
+
+        params_text = 'params\n'
+        memos_text = 'memos\n'
+
+        with open(filepath, 'w') as f:
+            f.write(text)
+            f.write(params_text)
+            for param in self.params:
+                f.write('{} = {}\n'.format(param[0], param[1]))
+
+            f.write(memos_text)
+            for memo in self.memos:
+                f.write(memo)
+
+
     def pre_stock(self):
         self._mk_logdir()
-        machine_info = self._get_machine_info()
+        self.machine_info = self._get_machine_info()
 
         if self.git_check == True:
-            git_head, git_diff = self._get_git_info()
-            self._write_log('git_head.txt', git_head, 'wb')
-            self._write_log('git_diff.txt', git_diff, 'wb')
+            self.git_head, self.git_diff = self._get_git_info()
+            self._write_log('git_head.txt', self.git_head, 'wb')
+            self._write_log('git_diff.txt', self.git_diff, 'wb')
         self._write_logs('params.txt', self.params)
         self._write_logs('memo.txt', self.memos)
-        self._write_logs('machine_info.txt', machine_info)
+        self._write_logs('machine_info.txt', self.machine_info)
 
-        start_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        self._write_log('exec_time.txt', 'start_time: {}\n'.format(start_time), 'w')
+        self.start_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+        self._write_log('exec_time.txt', 'start_time: {}\n'.format(self.start_time), 'w')
 
         # Change target of stdout and stderr to log files
         stdout_path = os.path.join(self.log_dirname, 'stdout.txt')
@@ -133,9 +176,12 @@ class ExpStock(object):
         sys.stdout = sys.__stdout__
         sys.stderr.close()
         sys.stderr = sys.__stdout__
-        finish_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        self._write_log('exec_time.txt', 'finish_time: {}\n'.format(finish_time), 'a')
+        self.finish_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+        self._write_log('exec_time.txt', 'finish_time: {}\n'.format(self.finish_time), 'a')
         self._write_log('func_result.txt', func_result)
+
+        if self.report == True:
+            self._create_report()
 
 def expstock(e):
     """expstock

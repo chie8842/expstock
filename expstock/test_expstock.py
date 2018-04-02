@@ -69,7 +69,9 @@ def test_append_param(init_ExpStock):
     test_param1 = 12345
     test_param2 = 'test_param'
     e.append_param(test_param1=test_param1, test_param2=test_param2)
-    assert e.params == [('test_param2', 'test_param'), ('test_param1', 12345)]
+    e.params.sort() 
+    assert e.params == [('test_param1', 12345), ('test_param2', 'test_param')]
+    print(e.params.sort())
 
 def test_append_memo(init_ExpStock):
     e = init_ExpStock.__next__()
@@ -110,4 +112,13 @@ def test__write_logs(init_ExpStock_with_args):
 b = 12345
 c = {'Name': 'Chie Hayashida'}
 '''
+
+def test__create_report(init_ExpStock_with_args):
+    e = init_ExpStock_with_args.__next__()
+    e._create_report()
+
+    filename = 'report.txt'
+    filepath = os.path.join(e.log_dirname, filename)
+
+    assert os.path.isfile(filepath)
 

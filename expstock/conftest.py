@@ -21,7 +21,9 @@ def init_ExpStock_with_args():
             log_dirname='test_logs/test',
             params=[('a', param_a), ('b', param_b), ('c', param_c)],
             memos=['This is a test memo'],
-            git_check=False)
+            git_check=False,
+            report=True,
+            script_name='test_script.py')
     yield e
     pass
     # if os.path.isdir(e.log_dirname):

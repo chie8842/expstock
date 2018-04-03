@@ -55,10 +55,11 @@ class ExpStock(object):
         self.start_time = None
         self.finish_time = None
         self.exp_name = exp_name
+        self.result = ''
         self._set_dirname(log_dirname)
         self.report = report
         self.dbsave=dbsave
-        self.dbfile = os.path.join(stock_root_dir, 'experiments.db')
+        self.dbfile = os.path.join(self.stock_root_dir, 'experiments.db')
 
     def _set_dirname(self, log_dirname):
         if log_dirname != '':
@@ -132,7 +133,7 @@ class ExpStock(object):
 report
 ========
 
-experiment_name: {}
+exp_name: {}
 memo: {}
 
 start_time: {}
@@ -141,8 +142,8 @@ finish_time: {}
 git_head: {}
 
 """.format(
-                self.experiment_name,
-                self.memo
+                self.exp_name,
+                self.memo,
                 self.start_time,
                 self.finish_time,
                 self.git_head)
@@ -166,8 +167,8 @@ git_head: {}
             self.git_head, self.git_diff = self._get_git_info()
             self._write_log('git_head.txt', self.git_head, 'wb')
             self._write_log('git_diff.txt', self.git_diff, 'wb')
-        self._write_log('memo.txt', self.memo)
-        self._write_logs('params.txt', self.params, 'w')
+        self._write_log('memo.txt', self.memo, 'w')
+        self._write_logs('params.txt', self.params)
         self._write_logs('machine_info.txt', self.machine_info)
 
         self.start_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
@@ -185,14 +186,15 @@ git_head: {}
         sys.stdout = open(stdout_path, 'w')
         sys.stderr = open(stderr_path, 'w')
 
-    def post_stock(self, func_result=''):
+    def post_stock(self, result):
+        self.result = result
         sys.stdout.close()
         sys.stdout = sys.__stdout__
         sys.stderr.close()
-        sys.stderr = sys.__stdout__
+        sys.stderr = sys.__stderr__
         self.finish_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         self._write_log('exec_time.txt', 'finish_time: {}\n'.format(self.finish_time), 'a')
-        self._write_log('func_result.txt', func_result)
+        self._write_log('result.txt', result)
 
         if self.report == True:
             self._create_report()
@@ -207,9 +209,9 @@ def expstock(e):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             e.pre_stock()
-            func_result = func(*args, **kwargs)
-            e.post_stock(func_result)
-            return func_result
+            result = func(*args, **kwargs)
+            e.post_stock(result)
+            return result
         return wrapper
     return _expstock
 

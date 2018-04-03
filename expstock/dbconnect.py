@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 import os
 import sqlite3
 
@@ -5,22 +8,23 @@ class DbConnect(object):
 
     def __init__(self, filepath):
         self.dbfile = filepath
-        self.c = self.db_connect()
-        _create_tables_if_not_exists()
-        self.sqlite_tables = get_tables()
+        self.conn, self.c = self.db_connect()
+        self._create_table_if_not_exists()
+        self.experiment_id, self.param_id = self._get_ids()
 
     def _create_table_if_not_exists(self):
+        sqlite_tables = self._get_tables()
         if 'experiments' not in sqlite_tables:
-            _create_table_experiments()
+            self._create_table_experiments()
         if 'params' not in sqlite_tables:
-            _create_table_params()
+            self._create_table_params()
 
     def db_connect(self):
         conn = sqlite3.connect(self.dbfile)
         c = conn.cursor()
-        return c
+        return conn, c
 
-    def get_tables(self):
+    def _get_tables(self):
         query = 'select name from sqlite_master where type="table"'
         tables = []
         for table_info in self.c.execute(query):
@@ -29,58 +33,86 @@ class DbConnect(object):
 
     def _create_table_experiments(self):
         query = """
-            create if not exists experiments(
+            create table if not exists experiments(
                 experiment_id integer primary key autoincrement
                 , experiment_name text
                 , memo text
                 , start_time text
                 , finish_time text
+                , result text
                 , git_head text
                 , log_dir)
         """
         self.c.execute(query)
-        self.c.commit()
+        self.conn.commit()
 
     def _create_table_params(self):
         query = """
-            create if not exists params(
+            create table if not exists params(
                 param_id integer primary key autoincrement
                 , experiment_id integer
                 , param_name text
                 , value text)
         """
         self.c.execute(query)
-        self.c.commit()
+        self.conn.commit()
+
+    def _get_experiments_count(self):
+        query = 'select count(*) from experiments'
+        experiments_count = self.c.execute(query).__next__()
+        return experiments_count[0]
+
+    def _get_params_count(self):
+        query = 'select count(*) from params'
+        params_count = self.c.execute(query).__next__()
+        return params_count[0]
 
     def _get_ids(self):
         querys = { 'get_experiment_id': 'select max(experiment_id) from experiments',
-                'get_param_id': 'select max(param_id) from params',
-                'get_memo_id': 'select max(memo_id) from memos'}
-        self.experiment_id = c.execute(querys['get_experiment_id'])[0]
-        self.param_id = c.execute(querys['get_param_id'])
-        self.memo_id = c.execute(querys['get_memo_id'])
+                'get_param_id': 'select max(param_id) from params' }
+        if self._get_experiments_count() == 0:
+            experiment_id = 1
+        else:
+            experiment_id = self.c.execute(querys['get_experiment_id']).__next__()[0] + 1
+
+        if self._get_params_count() == 0:
+            param_id = 1
+        else:
+            # param_id = 3
+            param_id = self.c.execute(querys['get_param_id']).__next__()[0] + 1
+        return experiment_id, param_id
 
     def _insert_into_experiments(self, e):
         query = """
-        insert into experiments values (?, ?, ?, ?, ?, ?)
+        insert into experiments values (?, ?, ?, ?, ?, ?, ?, ?)
         """
         value = (
                 self.experiment_id
-                , e.experiment_name
+                , e.exp_name
                 , e.memo
                 , e.start_time
                 , e.finish_time
+                , e.result
                 , e.git_head
                 , e.log_dirname)
         self.c.execute(query, value)
-        self.c.commit()
+        self.conn.commit()
 
     def _insert_into_params(self, e):
         query = """
         insert into params values (?, ?, ?, ?)
         """
-        value = e.params
-        self.c.executemany(query, value)
-        self.c.commit()
+        values = []
+        for param in e.params:
+            values.append(
+                    (
+                        self.param_id,
+                        self.experiment_id,
+                        param[0],
+                        str(param[1])
+                    ))
+            self.param_id += 1
+        self.c.executemany(query, values)
+        self.conn.commit()
 
 

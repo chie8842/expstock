@@ -33,7 +33,7 @@ class ExpStock(object):
     >>> post_stock()
     """
 
-    def __init__(self, log_dirname='', params=[], memos=[], git_check=True, report=False, script_name='Untitled'):
+    def __init__(self, log_dirname='', params=[], memo='', git_check=True, report=False, exp_name='Untitled', dbsave=False):
         """__init__
 
         :param log_dirname: name of the directory to stock expriments
@@ -42,28 +42,33 @@ class ExpStock(object):
                        e.g. [('param_1', 1), ('param_2', 'hoge')]
                        At there, `param_1` and `param_2` are the names of variables,
                        and `1` and `hoge` are the variables for experiments
-        :param memos:
+        :param memo:
         :param git_check:
         """
         self.stock_root_dir = 'experiments'
         self.params = params
         self.log_dirname = log_dirname
-        self.memos = memos
+        self.memo = memo
         self.git_check = git_check
         self.git_head = None
         self.git_diff = None
         self.start_time = None
         self.finish_time = None
-        self.script_name = script_name
+        self.exp_name = exp_name
         self._set_dirname(log_dirname)
         self.report = report
+        self.dbsave=dbsave
+        self.dbfile = os.path.join(stock_root_dir, 'experiments.db')
 
     def _set_dirname(self, log_dirname):
         if log_dirname != '':
             self.log_dirname = log_dirname
         else:
             current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
-            self.log_dirname = os.path.join(self.stock_root_dir, current_time)
+            self.log_dirname = os.path.join(
+                    self.stock_root_dir,
+                    '{}_{}'.format(current_time, e.exp_name)
+                    )
 
     def _mk_logdir(self):
         if not os.path.isdir(self.log_dirname):
@@ -95,9 +100,8 @@ class ExpStock(object):
         for obj in kwargs:
             self.params.append((obj, kwargs[obj]))
 
-    def append_memo(self, *args):
-        for obj in args[0:]:
-            self.memos.append(obj)
+    def set_memo(self, memo):
+        self.memo = memo
 
     def _write_log(self, filename, value, open_type='w'):
         filepath = os.path.join(self.log_dirname, filename)
@@ -113,6 +117,11 @@ class ExpStock(object):
                 elif type(value) == str:
                     f.write(value + '\n')
 
+    def aaa():
+        dbfile = os.path.join(self.stock_root_dir, 'experiments.db')
+        db = DbConnect(dbfile)
+        db._create_table()
+
     def _create_report(self):
         """_create_report
         TODO: Jinja2を使って書き換える
@@ -123,7 +132,8 @@ class ExpStock(object):
 report
 ========
 
-script_name: {}
+experiment_name: {}
+memo: {}
 
 start_time: {}
 finish_time: {}
@@ -131,14 +141,14 @@ finish_time: {}
 git_head: {}
 
 """.format(
-                self.script_name,
+                self.experiment_name,
+                self.memo
                 self.start_time,
                 self.finish_time,
                 self.git_head)
 
         params_text = 'params:\n'
         empty_row = '\n'
-        memos_text = 'memos:\n'
 
         with open(filepath, 'w') as f:
             f.write(text)
@@ -147,10 +157,6 @@ git_head: {}
                 f.write('{} = {}\n'.format(param[0], param[1]))
 
             f.write(empty_row)
-            f.write(memos_text)
-            for memo in self.memos:
-                f.write(memo)
-
 
     def pre_stock(self):
         self._mk_logdir()
@@ -160,12 +166,18 @@ git_head: {}
             self.git_head, self.git_diff = self._get_git_info()
             self._write_log('git_head.txt', self.git_head, 'wb')
             self._write_log('git_diff.txt', self.git_diff, 'wb')
-        self._write_logs('params.txt', self.params)
-        self._write_logs('memo.txt', self.memos)
+        self._write_log('memo.txt', self.memo)
+        self._write_logs('params.txt', self.params, 'w')
         self._write_logs('machine_info.txt', self.machine_info)
 
         self.start_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         self._write_log('exec_time.txt', 'start_time: {}\n'.format(self.start_time), 'w')
+        if self.dbsave == True:
+            dbconn = DbConnect(self.dbfile)
+            dbconn._create_table_experiments()
+            dbconn._create_table_params()
+            dbconn._insert_into_experiments(self)
+            dbconn._insert_into_params(self)
 
         # Change target of stdout and stderr to log files
         stdout_path = os.path.join(self.log_dirname, 'stdout.txt')

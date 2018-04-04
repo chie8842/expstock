@@ -82,7 +82,7 @@ class DbConnect(object):
             param_id = self.c.execute(querys['get_param_id']).__next__()[0] + 1
         return experiment_id, param_id
 
-    def _insert_into_experiments(self, e):
+    def insert_into_experiments(self, e):
         query = """
         insert into experiments values (?, ?, ?, ?, ?, ?, ?, ?)
         """
@@ -98,7 +98,43 @@ class DbConnect(object):
         self.c.execute(query, value)
         self.conn.commit()
 
-    def _insert_into_params(self, e):
+    def insert_into_experiments_pre(self, e):
+        query = """
+        insert into experiments(
+          experiment_id
+          , experiment_name
+          , memo
+          , start_time
+          , git_head
+          , log_dir
+        ) values (?, ?, ?, ?, ?, ?)
+        """
+        value = (
+                self.experiment_id
+                , e.exp_name
+                , e.memo
+                , e.start_time
+                , e.git_head
+                , e.log_dirname)
+        self.c.execute(query, value)
+        self.conn.commit()
+
+    def update_experiments(self, e):
+        query = """
+        update experiments set
+          finish_time = ?
+          , result = ?
+        where experiment_id = ?
+        """
+        value = (
+                e.finish_time
+                , e.result
+                , self.experiment_id)
+        self.c.execute(query, value)
+        self.conn.commit()
+
+
+    def insert_into_params(self, e):
         query = """
         insert into params values (?, ?, ?, ?)
         """

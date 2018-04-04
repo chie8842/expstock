@@ -7,6 +7,7 @@ import os
 import platform
 import sys
 import subprocess
+from expstock.dbconnect import DbConnect
 
 
 class ExpStock(object):
@@ -68,8 +69,12 @@ class ExpStock(object):
             current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
             self.log_dirname = os.path.join(
                     self.stock_root_dir,
-                    '{}_{}'.format(current_time, e.exp_name)
+                    '{}_{}'.format(current_time, self.exp_name)
                     )
+
+
+    def set_memo(self, memo):
+        self.memo = memo
 
     def _mk_logdir(self):
         if not os.path.isdir(self.log_dirname):
@@ -118,10 +123,17 @@ class ExpStock(object):
                 elif type(value) == str:
                     f.write(value + '\n')
 
-    def aaa():
+    def _dbsave_pre(self):
         dbfile = os.path.join(self.stock_root_dir, 'experiments.db')
-        db = DbConnect(dbfile)
-        db._create_table()
+        self.dbconn = DbConnect(dbfile)
+        self.dbconn.insert_into_experiments_pre(self)
+        self.dbconn.insert_into_params(self)
+
+    def _dbsave_post(self):
+        try:
+            self.dbconn.update_experiments(self)
+        except NameError:
+            pass
 
     def _create_report(self):
         """_create_report
@@ -174,11 +186,7 @@ git_head: {}
         self.start_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         self._write_log('exec_time.txt', 'start_time: {}\n'.format(self.start_time), 'w')
         if self.dbsave == True:
-            dbconn = DbConnect(self.dbfile)
-            dbconn._create_table_experiments()
-            dbconn._create_table_params()
-            dbconn._insert_into_experiments(self)
-            dbconn._insert_into_params(self)
+            self._dbsave_pre()
 
         # Change target of stdout and stderr to log files
         stdout_path = os.path.join(self.log_dirname, 'stdout.txt')
@@ -198,6 +206,9 @@ git_head: {}
 
         if self.report == True:
             self._create_report()
+
+        if self.dbsave == True:
+            self._dbsave_post()
 
 def expstock(e):
     """expstock

@@ -55,7 +55,6 @@ class ExpStock(object):
         """
         self.stock_root_dir = 'experiments'
         self.params = params
-        self.log_dirname = log_dirname
         self.memo = memo
         self.git_check = git_check
         self.git_head = None
@@ -71,12 +70,14 @@ class ExpStock(object):
 
     def _set_dirname(self, log_dirname):
         if log_dirname != '':
-            self.log_dirname = log_dirname
+            self.log_dirname = os.path.abspath(log_dirname)
         else:
             current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
-            self.log_dirname = os.path.join(
-                    self.stock_root_dir,
-                    '{}_{}'.format(current_time, self.exp_name)
+            self.log_dirname = os.path.abspath(
+                    os.path.join(
+                        self.stock_root_dir,
+                        '{}_{}'.format(current_time, self.exp_name)
+                        )
                     )
 
     def set_memo(self, memo):
@@ -135,7 +136,7 @@ class ExpStock(object):
                     f.write(value + '\n')
 
     def _dbsave_pre(self):
-        dbfile = os.path.join(self.stock_root_dir, 'experiments.db')
+        dbfile = os.path.expanduser('~/.experiments.db')
         self.dbconn = DbConnect(dbfile)
         self.dbconn.insert_into_experiments_pre(self)
         self.dbconn.insert_into_params(self)
@@ -194,8 +195,9 @@ git_head: {}
         self._write_logs('params.txt', self.params)
         self._write_logs('machine_info.txt', self.machine_info)
 
-        self.start_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        self._write_log('exec_time.txt', 'start_time: {}\n'.format(self.start_time), 'w')
+        self.start_time = datetime.now()
+        self.start_time_str = self.start_time.strftime('%Y/%m/%d %H:%M:%S')
+        self._write_log('exec_time.txt', 'start_time: {}\n'.format(self.start_time_str), 'w')
         if self.dbsave == True:
             self._dbsave_pre()
 
@@ -211,13 +213,15 @@ git_head: {}
         sys.stdout = sys.__stdout__
         sys.stderr.close()
         sys.stderr = sys.__stderr__
-        self.finish_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+        self.finish_time = datetime.now()
+        self.finish_time_str = self.finish_time.strftime('%Y/%m/%d %H:%M:%S')
         self.execution_time = self.finish_time - self.start_time
+        self.execution_time_str = str(self.execution_time)
         self._write_log(
                 'exec_time.txt',
                 'finish_time: {}\nexecution_time: {}\n'.format(
-                    self.finish_time,
-                    self.execution_time),
+                    self.finish_time_str,
+                    self.execution_time_str),
                 'a')
         self._write_log('result.txt', result)
 

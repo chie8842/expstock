@@ -17,10 +17,10 @@ class ExpStock(object):
     >>> a = 1
     >>> b = 2
     >>> e = ExpStock()
+    >>> e.append_param(param_1, param_2, param_3)
     >>> @e.expstock
     ... def exp_func(x, y):
     ...     print(a + b)
-    >>> e.append_param(param_1, param_2, param_3)
     >>> exp_func(a, b)
 
     or at a simple script, you can use `pre_stock` and `post_stock`, too.
@@ -34,7 +34,14 @@ class ExpStock(object):
     >>> post_stock()
     """
 
-    def __init__(self, log_dirname='', params=[], memo='', git_check=True, report=False, exp_name='Untitled', dbsave=False):
+    def __init__(self,
+                 log_dirname='',
+                 params=[],
+                 memo='',
+                 git_check=True,
+                 report=False,
+                 exp_name='Untitled',
+                 dbsave=False):
         """__init__
 
         :param log_dirname: name of the directory to stock expriments
@@ -72,7 +79,6 @@ class ExpStock(object):
                     '{}_{}'.format(current_time, self.exp_name)
                     )
 
-
     def set_memo(self, memo):
         self.memo = memo
 
@@ -81,7 +87,8 @@ class ExpStock(object):
             os.makedirs(self.log_dirname)
 
     def _get_machine_info(self):
-        """get_machine_info
+        """_get_machine_info
+        TODO: split to independent module
         TODO: add function to get resource usage
         """
         machine_info = []
@@ -95,10 +102,14 @@ class ExpStock(object):
         return machine_info
 
     def _get_git_info(self):
+        """_get_git_info
+        TODO: split to independent module
+        :return: (git_head, git_diff)
+        :return type: (str, str)
+        """
         git_head = subprocess.check_output(['git', 'log', '-n', '1', '--format=%H'])
         git_diff = subprocess.check_output(['git', 'diff'])
         return git_head, git_diff
-
 
     def append_param(self, **kwargs):
         flg = 1
@@ -201,7 +212,13 @@ git_head: {}
         sys.stderr.close()
         sys.stderr = sys.__stderr__
         self.finish_time = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        self._write_log('exec_time.txt', 'finish_time: {}\n'.format(self.finish_time), 'a')
+        self.execution_time = self.finish_time - self.start_time
+        self._write_log(
+                'exec_time.txt',
+                'finish_time: {}\nexecution_time: {}\n'.format(
+                    self.finish_time,
+                    self.execution_time),
+                'a')
         self._write_log('result.txt', result)
 
         if self.report == True:
@@ -213,7 +230,8 @@ git_head: {}
 def expstock(e):
     """expstock
 
-    :param func:
+    :param e: ExpStock instance
+    :return: return value of the decorated function
     """
 
     def _expstock(func):

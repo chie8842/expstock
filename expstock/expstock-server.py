@@ -1,4 +1,4 @@
-from bottle import route, get, run, template
+from bottle import route, get, run, template, redirect
 from bottle import TEMPLATE_PATH, jinja2_template as template
 import os
 import sqlite3
@@ -16,10 +16,10 @@ def show_experiments():
     experiments = get_experiments()
     return template('index', experiments=experiments)
 
-#@route("/delete/<todo_id:int>")
-#def delete(todo_id):
-#    delete_todo(todo_id)
-#    return redirect("/")
+@route('/delete/<experiment_id:int>')
+def delete(experiment_id):
+    delete_experiment(experiment_id)
+    return redirect('/')
 
 def get_experiments():
     dbconn = DbConnect(dbfile)
@@ -39,6 +39,16 @@ def get_experiments():
                     'log_dir': row[7]
                     }
                 )
+    dbconn.conn.close()
     return experiments
+
+def delete_experiment(experiment_id):
+    print(experiment_id)
+    print(type(experiment_id))
+    dbconn = DbConnect(dbfile)
+    query = 'delete from experiments where experiment_id = ?'
+    dbconn.c.execute(query, (experiment_id,))
+    dbconn.conn.commit()
+    dbconn.conn.close()
 
 run(host=host, port=port, debug=True, reloader=True)

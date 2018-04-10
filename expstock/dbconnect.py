@@ -91,9 +91,9 @@ class DbConnect(object):
                 self.experiment_id
                 , e.exp_name
                 , e.memo
-                , e.start_time
-                , e.finish_time
-                , e.execution_time
+                , e.start_time_str
+                , e.finish_time_str
+                , e.execution_time_str
                 , e.result
                 , e.git_head
                 , e.log_dirname)
@@ -115,7 +115,7 @@ class DbConnect(object):
                 self.experiment_id
                 , e.exp_name
                 , e.memo
-                , e.start_time
+                , e.start_time_str
                 , e.git_head
                 , e.log_dirname)
         self.c.execute(query, value)
@@ -130,8 +130,8 @@ class DbConnect(object):
         where experiment_id = ?
         """
         value = (
-                e.finish_time
-                , e.execution_time
+                e.finish_time_str
+                , e.execution_time_str
                 , e.result
                 , self.experiment_id)
         self.c.execute(query, value)

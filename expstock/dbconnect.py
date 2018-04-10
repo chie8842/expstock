@@ -39,6 +39,7 @@ class DbConnect(object):
                 , memo text
                 , start_time text
                 , finish_time text
+                , execution_time text
                 , result text
                 , git_head text
                 , log_dir)
@@ -92,6 +93,7 @@ class DbConnect(object):
                 , e.memo
                 , e.start_time
                 , e.finish_time
+                , e.execution_time
                 , e.result
                 , e.git_head
                 , e.log_dirname)
@@ -123,11 +125,13 @@ class DbConnect(object):
         query = """
         update experiments set
           finish_time = ?
+          , execution_time = ?
           , result = ?
         where experiment_id = ?
         """
         value = (
                 e.finish_time
+                , e.execution_time
                 , e.result
                 , self.experiment_id)
         self.c.execute(query, value)

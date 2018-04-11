@@ -18,4 +18,4 @@ test:
     - script:
         name: test execution
         code: |
-          pytest expstock
+          pip install -r test_requirements.txt && pytest expstock

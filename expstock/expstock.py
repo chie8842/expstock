@@ -244,7 +244,7 @@ def expstock(e):
         def wrapper(*args, **kwargs):
             e.pre_stock()
             result = func(*args, **kwargs)
-            e.post_stock(result)
+            e.post_stock(str(result))
             return result
         return wrapper
     return _expstock

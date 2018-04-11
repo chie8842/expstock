@@ -14,11 +14,11 @@ def test_variables(init_ExpStock):
     e = init_ExpStock.__next__()
     assert e.stock_root_dir == 'experiments'
     assert e.params == []
-    assert e.memos == []
+    assert e.memo == ''
     assert e.git_check == True
     print(datetime.now())
     print(e.log_dirname)
-    assert e.log_dirname == 'experiments/20180401_000000'
+    assert e.log_dirname == os.path.abspath('experiments/20180401_000000_Untitled')
 
 def test_variables_with_args(init_ExpStock_with_args):
     e = init_ExpStock_with_args.__next__()
@@ -29,11 +29,11 @@ def test_variables_with_args(init_ExpStock_with_args):
             ('b', 12345),
             ('c', {'Name': 'Chie Hayashida'})
             ]
-    assert e.memos == ['This is a test memo']
+    assert e.memo == 'This is a test memo'
     assert e.git_check == False
     print(datetime.now())
     print(e.log_dirname)
-    assert e.log_dirname == 'test_logs/test'
+    assert e.log_dirname == os.path.abspath('test_logs/test')
 
 def test__mk_logdir(init_ExpStock_with_args):
     e = init_ExpStock_with_args.__next__()
@@ -73,19 +73,12 @@ def test_append_param(init_ExpStock):
     assert e.params == [('test_param1', 12345), ('test_param2', 'test_param')]
     print(e.params.sort())
 
-def test_append_memo(init_ExpStock):
+def test_set_memo(init_ExpStock):
     e = init_ExpStock.__next__()
-    test_memo = '''
-    test memo
-    Experiment 1
-    ...
-    ...
-    ...
-    '''
-    test_memo2 = 'x = 1, y = 2'
-    e.append_memo(test_memo, test_memo2)
-    print(e.memos)
-    assert e.memos == ['\n    test memo\n    Experiment 1\n    ...\n    ...\n    ...\n    ',  'x = 1, y = 2']
+    test_memo = 'This is a test experiment.'
+    e.set_memo(test_memo)
+    print(e.memo)
+    assert e.memo == test_memo
 
 def test__write_log(init_ExpStock_with_args):
     e = init_ExpStock_with_args.__next__()

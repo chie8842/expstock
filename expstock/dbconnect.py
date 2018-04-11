@@ -85,7 +85,7 @@ class DbConnect(object):
 
     def insert_into_experiments(self, e):
         query = """
-        insert into experiments values (?, ?, ?, ?, ?, ?, ?, ?)
+        insert into experiments values (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         value = (
                 self.experiment_id

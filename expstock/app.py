@@ -18,10 +18,36 @@ def show_experiments():
     experiments = get_experiments()
     return template('index', experiments=experiments)
 
+@route('/experiment/<experiment_id:int>')
+def show_params(experiment_id):
+    experiments = get_experiments()
+    params = get_params(experiment_id)
+    return template(
+            'params',
+            experiments=experiments,
+            experiment_id=experiment_id,
+            params=params)
+
 @route('/delete/<experiment_id:int>')
 def delete(experiment_id):
     delete_experiment(experiment_id)
     return redirect('/')
+
+def get_params(experiment_id):
+    dbconn = DbConnect(dbfile)
+    query = 'select param_id, experiment_id, param_name, value from params where experiment_id = ?'
+    params = []
+    for row in dbconn.c.execute(query, (experiment_id,)):
+        params.append(
+                {
+                    'param_id': row[0],
+                    'experiment_id': row[1],
+                    'param_name': row[2],
+                    'value': row[3]
+                    }
+                )
+    dbconn.conn.close()
+    return params
 
 def get_experiments():
     dbconn = DbConnect(dbfile)

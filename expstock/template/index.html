@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="jp">
+<head>
+  <meta charset="UTF-8">
+  <title>expstock-server</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+  <!-- <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v2.3.7/dist/mini-default.min.css">
+  -->
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">expstock</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div>
+    <main role="main" class="px-4">
+      <div class="align-items-center pt-3 pb-2 mb-3 mt-5 border-bottom">
+        <h2>experiment history</h2>
+      </div>
+      <div class="table-responsive table table-hover">
+        <table class="table table-striped table-sm">
+          <thread>
+            <tr>
+              <th class="col-xs-3 col-ms-3 col-md-4 col-lg-4">id</th>
+              <th class="col-xs-3 col-ms-3 col-md-4 col-lg-4">experiment name</th>
+              <th class="col-xs-3 col-ms-3 col-md-4 col-lg-4">memo</th>
+              <th class="col-xs-3 col-ms-3 col-md-4 col-lg-4">start_time</th>
+              <th class="col-xs-3 col-ms-3 col-md-4 col-lg-4">finish_time</th>
+              <th class="col-xs-3 col-ms-3 col-md-4 col-lg-4">execution_time</th>
+              <th class="col-xs-3 col-ms-3 col-md-4 col-lg-4">git_head</th>
+              <th class="col-xs-3 col-ms-3 col-md-4 col-lg-4">log_dir</th>
+              <th class="col-xs-3 col-ms-3 col-md-4 col-lg-4">operation</th>
+            </tr>
+          </thread>
+          <tbody>
+          {% for exp in experiments %}
+            <tr>
+              <td><a href="/experiment/{{ exp['experiment_id']}}">{{ exp["experiment_id"] }}</a></td>
+              <td>{{ exp["experiment_name"] }}</td>
+              <td>{{ exp["memo"] }}</td>
+              <td>{{ exp["start_time"] }}</td>
+              <td>{{ exp["finish_time"] }}</td>
+              <td>{{ exp["execution_time"] }}</td>
+              <td>{{ exp["git_head"] }}</td>
+              <td><a href=file:///{{ exp["log_dir"] }}>{{ exp["log_dir"] }}</a></td>
+              <td><a href="/delete/{{ exp['experiment_id'] }}">delete</a></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

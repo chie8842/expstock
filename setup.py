@@ -3,7 +3,7 @@ import sys
 from setuptools import setup, find_packages
 sys.path.append('expstock')
 
-__version__ = '0.1.0'
+__version__ = '0.1.3'
 __author__ = 'Chie Hayashida'
 __author_email__ = 'chie-hayashida@cookpad.com'
 __classifiers__ = (
@@ -36,12 +36,12 @@ setup(
     url='https://github.com/chie8842/expstock',
     description='Stock your experiments',
     scripts=['scripts/expstock-server'],
-    data_files=[('expstock/template', ['expstock/template/index.html'])],
     long_description=readme,
     test_suite='test',
     tests_require=tests_require,
     classifiers=__classifiers__,
     packages=find_packages(),
+    include_package_data=True,
     install_requires=requires,
     license='MIT')
 

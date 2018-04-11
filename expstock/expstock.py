@@ -99,6 +99,7 @@ class ExpStock(object):
         machine_info.append(('version', platform.version()))
         machine_info.append(('machine', platform.machine()))
         machine_info.append(('processor', platform.processor()))
+        machine_info.append(('python_version', platform.python_version()))
 
         return machine_info
 

@@ -95,7 +95,7 @@ class DbConnect(object):
                 , e.finish_time_str
                 , e.execution_time_str
                 , e.result
-                , e.git_head
+                , e.git_head.decode('utf-8')
                 , e.log_dirname + '/')
         self.c.execute(query, value)
         self.conn.commit()
@@ -116,7 +116,7 @@ class DbConnect(object):
                 , e.exp_name
                 , e.memo
                 , e.start_time_str
-                , e.git_head
+                , e.git_head.decode('utf-8')
                 , e.log_dirname + '/')
         self.c.execute(query, value)
         self.conn.commit()

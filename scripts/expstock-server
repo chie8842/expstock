@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+
+from expstock import app
+
+host = '0.0.0.0'
+port = 8000
+
+app.run(host=host, port=port, debug=True, reloader=True)

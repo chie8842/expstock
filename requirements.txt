@@ -1,5 +1,1 @@
-gitpython
-freezegun
-pytest
-pytest-mock
-mock
+bottle

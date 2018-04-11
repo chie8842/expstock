@@ -22,9 +22,11 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.md')) as f:
     readme = f.read()
 
-
 with open('requirements.txt') as f:
     requires = f.read().splitlines()
+
+with open('test_requirements.txt') as f:
+    tests_require= f.read().splitlines()
 
 setup(
     name='expstock',
@@ -33,8 +35,11 @@ setup(
     author_email=__author_email__,
     url='https://github.com/chie8842/expstock',
     description='Stock your experiments',
+    scripts=['scripts/expstock-server'],
+    data_files=[('expstock/template', ['expstock/template/index.html'])],
     long_description=readme,
     test_suite='test',
+    tests_require=tests_require,
     classifiers=__classifiers__,
     packages=find_packages(),
     install_requires=requires,

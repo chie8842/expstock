@@ -10,4 +10,3 @@ RUN pip install pytest
 
 WORKDIR /tmp/work
 
-ENTRYPOINT ["/bin/sh"]

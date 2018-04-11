@@ -57,8 +57,8 @@ class ExpStock(object):
         self.params = params
         self.memo = memo
         self.git_check = git_check
-        self.git_head = None
-        self.git_diff = None
+        self.git_head = b''
+        self.git_diff = b''
         self.start_time = None
         self.finish_time = None
         self.exp_name = exp_name

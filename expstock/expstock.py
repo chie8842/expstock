@@ -208,7 +208,7 @@ git_head: {}
         sys.stdout = open(stdout_path, 'w')
         sys.stderr = open(stderr_path, 'w')
 
-    def post_stock(self, result):
+    def post_stock(self, result=''):
         self.result = result
         sys.stdout.close()
         sys.stdout = sys.__stdout__

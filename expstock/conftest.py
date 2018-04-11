@@ -32,7 +32,7 @@ def init_ExpStock_with_args():
 
 @pytest.fixture()
 def init_DbConnect_with_empty_db():
-    filepath = 'experiments/test.db'
+    filepath = 'test.db'
     dbconn = DbConnect(filepath)
     yield dbconn
     os.remove(filepath)

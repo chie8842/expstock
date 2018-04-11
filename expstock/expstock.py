@@ -208,7 +208,7 @@ git_head: {}
         sys.stdout = open(stdout_path, 'w')
         sys.stderr = open(stderr_path, 'w')
 
-    def post_stock(self, result):
+    def post_stock(self, result=''):
         self.result = result
         sys.stdout.close()
         sys.stdout = sys.__stdout__
@@ -244,7 +244,7 @@ def expstock(e):
         def wrapper(*args, **kwargs):
             e.pre_stock()
             result = func(*args, **kwargs)
-            e.post_stock(result)
+            e.post_stock(str(result))
             return result
         return wrapper
     return _expstock

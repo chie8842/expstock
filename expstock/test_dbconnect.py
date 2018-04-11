@@ -38,7 +38,7 @@ def test_insert_into_experiments(init_DbConnect_with_empty_db, init_ExpStock_wit
             '0:00:00',
             'test result',
             None,
-            os.path.abspath('test_logs/test'))
+            os.path.abspath('test_logs/test') + '/')
     assert expected == actual
 
 def test_insert_into_params(init_DbConnect_with_empty_db, init_ExpStock_with_args):
@@ -79,7 +79,7 @@ def test_insert_into_experiments_pre(init_DbConnect_with_empty_db, init_ExpStock
             None,
             None,
             None,
-            os.path.abspath('test_logs/test'))
+            os.path.abspath('test_logs/test') + '/')
     assert expected == actual
 
 @freeze_time('2018-04-01')
@@ -102,6 +102,6 @@ def test_update_experiments(init_DbConnect_with_empty_db, init_ExpStock_with_arg
             '0:00:00',
             'test result',
             None,
-            os.path.abspath('test_logs/test'))
+            os.path.abspath('test_logs/test') + '/')
     assert expected == actual
 

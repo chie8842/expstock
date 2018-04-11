@@ -1,8 +1,10 @@
+#!/usr/bin/env python
+
 from bottle import route, get, run, template, redirect
 from bottle import TEMPLATE_PATH, jinja2_template as template
 import os
 import sqlite3
-from dbconnect import DbConnect
+from expstock.dbconnect import DbConnect
 
 dbfile = os.path.expanduser('~/.experiments.db')
 host = '0.0.0.0'
@@ -51,4 +53,4 @@ def delete_experiment(experiment_id):
     dbconn.conn.commit()
     dbconn.conn.close()
 
-run(host=host, port=port, debug=True, reloader=True)
+#run(host=host, port=port, debug=True, reloader=True)

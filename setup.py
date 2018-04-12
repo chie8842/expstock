@@ -3,7 +3,7 @@ import sys
 from setuptools import setup, find_packages
 sys.path.append('expstock')
 
-__version__ = '0.1.3'
+__version__ = '0.2'
 __author__ = 'Chie Hayashida'
 __author_email__ = 'chie-hayashida@cookpad.com'
 __classifiers__ = (

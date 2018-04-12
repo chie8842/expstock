@@ -1,4 +1,4 @@
-[![wercker status](https://app.wercker.com/status/da135ca979d1a5dcb1ed72e2f5de1f65/s/master "wercker status")](https://app.wercker.com/project/byKey/da135ca979d1a5dcb1ed72e2f5de1f65)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/expstock/expstock)
+[![wercker status](https://app.wercker.com/status/da135ca979d1a5dcb1ed72e2f5de1f65/s/master "wercker status")](https://app.wercker.com/project/byKey/da135ca979d1a5dcb1ed72e2f5de1f65) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/expstock/expstock) [![PyPI version](https://badge.fury.io/py/expstock.svg)](https://badge.fury.io/py/expstock) [![Maintainability](https://api.codeclimate.com/v1/badges/37c08a214b40cfdc9ac6/maintainability)](https://codeclimate.com/github/chie8842/expstock/maintainability) 
 # EXPSTOCK
 
 **expstock** is a tool to manage results of experiments in machine learning, data analysis, simulation, etc.
@@ -127,3 +127,6 @@ git clone https://github.com/chie8842/expstock
 python setup.py install
 ```
 
+## Contributing
+
+Contribution is welcomed. Please feel free to write issues or talk to on [gitter](https://gitter.im/expstock/expstock).

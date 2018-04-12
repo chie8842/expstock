@@ -3,10 +3,10 @@
 
 **expstock** is a tool to manage results of experiments in machine learning, data analysis, simulation, etc.
 
-When we try to integrate machine learning models or performe simulation using a mathematical model, we execute the same script or program many times with different parameters or logics.
-In order to summalize or reproduce our experiments, it is necessary to take environmental information comprehensively.
+When we try to integrate machine learning models or perform simulation using a mathematical model, we execute the same script or program many times with different parameters or logics.
+In order to summarize or reproduce our experiments, it is necessary to take environmental information comprehensively.
 
-expstock can automatically save environmental information with text files with adding simple implementation.
+expstock can automatically save environmental information with text files by adding simple implementation.
 
 ## Getting Started
 
@@ -18,7 +18,7 @@ expstock has mainly two functions.
 ### Basic Usage
 
 There are two implementation types.
-The simplest way is to surround the target mothod with the decorator as below.
+The simplest way is to surround the target method with the decorator as below.
 
 ```
 from expstock import expstock
@@ -70,7 +70,7 @@ experiments
 
 ```
 
-In the above, each file contains following information.
+In the above, each file contains the following information.
 
 |file name | contents|user implementation|
 |----------|---------|--------|
@@ -94,14 +94,14 @@ joblib.dump(model, e.log_dirname)
 
 ### Log Visualization
 
-If you use `e = ExpStock(dbsave=True)`, some types of logs are save on not only text but also sqlite tables.
+If you use `e = ExpStock(dbsave=True)`, some types of logs are save on not only text but also SQLite tables.
 And now, this tool can visualize your experiments with `expstock-server`.
 
 ```
 $ expstock-server
 ```
 
-You can access expstock-server with **<server-ip>:8000**.
+You can access expstock-server with **hostname:8000**.
 
 ![expstock-server](./img/expstock-server.png) 
 
@@ -109,7 +109,7 @@ You can access expstock-server with **<server-ip>:8000**.
 
 ### Requirements
 No requirements for default usage(only text outputs).
-If you use `dbsave` function and see logs on expstock dashboard, [sqlite](https://www.sqlite.org/index.html) is needed.
+If you use `dbsave` function and see logs on expstock dashboard, [SQLite](https://www.sqlite.org/index.html) is needed.
 
 
 ### Installation
@@ -120,7 +120,7 @@ You can get expstock from pypi.
 pip install expstock
 ```
 
-You can get source from github and build, too.
+You can get the source from github and build, too.
 
 ```
 git clone https://github.com/chie8842/expstock
@@ -129,4 +129,4 @@ python setup.py install
 
 ## Contributing
 
-Contribution is welcomed. Please feel free to write issues or talk to on [gitter](https://gitter.im/expstock/expstock).
+Contributions are welcomed. Please feel free to write issues or talk to on [gitter](https://gitter.im/expstock/expstock).

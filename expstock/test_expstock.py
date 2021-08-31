@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import copy
 from datetime import datetime
 import mock
 import os
@@ -65,7 +66,7 @@ def test__get_git_info(init_ExpStock):
     assert git_diff == expect_git_diff
 
 def test_append_param(init_ExpStock):
-    e = init_ExpStock.__next__()
+    e = copy.deepcopy(init_ExpStock.__next__())
     test_param1 = 12345
     test_param2 = 'test_param'
     e.append_param(test_param1=test_param1, test_param2=test_param2)
